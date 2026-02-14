@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>San Valentín</title>
+
+<style>
+body{
+margin:0;
+font-family:'Segoe UI',cursive;
+background:#020617;
+color:white;
+text-align:center;
+overflow-x:hidden;
+}
+
+/* estrellas */
+.star{
+position:fixed;
+width:2px;height:2px;
+background:white;
+animation:starMove linear infinite;
+}
+@keyframes starMove{to{transform:translateY(110vh);}}
+
+/* imagen encima del sobre */
+.imagen-arriba img{
+width:160px;
+margin-top:40px;
+animation:flotar 3s ease-in-out infinite;
+}
+@keyframes flotar{
+0%,100%{transform:translateY(0);}
+50%{transform:translateY(-10px);}
+}
+
+.pantalla{display:none;padding:10px;}
+.activa{display:block;}
+
+button{
+padding:14px 28px;
+font-size:18px;
+border:none;
+border-radius:50px;
+margin:10px;
+cursor:pointer;
+}
+
+#siBtn{background:white;color:#ff4d6d;font-weight:bold;}
+#noBtn{background:#444;color:white;}
+
+/* SOBRE */
+.envelope{
+position:relative;
+width:90%;
+max-width:350px;
+height:200px;
+background:#ff4d6d;
+margin:20px auto;
+border-radius:10px;
+}
+
+.flap{
+position:absolute;
+top:-100px;
+left:0;
+border-left:175px solid transparent;
+border-right:175px solid transparent;
+border-bottom:100px solid #ff4d6d;
+transform-origin:bottom;
+transition:1s;
+}
+
+.sello{
+position:absolute;
+top:70px;
+left:50%;
+transform:translateX(-50%);
+background:white;
+color:#ff4d6d;
+padding:8px 18px;
+border-radius:50px;
+font-weight:bold;
+box-shadow:0 0 15px rgba(255,255,255,0.8);
+}
+
+.envelope.abierto .flap{
+transform:rotateX(180deg);
+}
+
+/* carta */
+.carta{
+background:white;
+color:black;
+padding:20px;
+border-radius:20px;
+font-size:16px;
+line-height:1.5;
+margin:10px;
+max-width:600px;
+}
+
+.carta-container{
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+@media(min-width:768px){
+.carta-container{flex-direction:row;justify-content:center;}
+}
+
+img{
+width:180px;
+height:230px;
+object-fit:cover;
+border-radius:20px;
+margin:10px;
+}
+
+.contador{margin-top:10px;font-size:18px;color:#ffb6c1;}
+.historia{margin-top:15px;font-size:18px;color:#cbd5f5;}
+
+.petalo{
+position:fixed;
+top:-10px;
+font-size:20px;
+animation:caer linear infinite;
+}
+@keyframes caer{to{transform:translateY(110vh) rotate(360deg);}}
+
+.final{
+font-size:30px;
+margin-top:20px;
+opacity:0;
+animation:aparecer 3s forwards;
+animation-delay:6s;
+}
+@keyframes aparecer{to{opacity:1;transform:scale(1.1);}}
+
+.foto-final{
+margin-top:15px;
+width:240px;height:240px;
+object-fit:cover;
+border-radius:20px;
+}
+
+/* mensaje secreto */
+.secreto{
+margin-top:20px;
+font-size:20px;
+color:#ffb6c1;
+opacity:0;
+transition:1s;
+}
+
+/* corazón con nombres */
+.name-star{
+position:fixed;
+color:#ffb6c1;
+font-size:16px;
+animation:pulse 2s infinite;
+}
+@keyframes pulse{
+0%,100%{opacity:1;}
+50%{opacity:0.4;}
+}
+</style>
+</head>
+
+<body>
+
+<audio autoplay loop> <source src="./llevame.mp3"> </audio>
+
+<audio id="click">
+<source src="click.mp3">
+</audio>
+
+<!-- estrellas normales -->
+<script>
+for(let i=0;i<80;i++){
+const s=document.createElement("div");
+s.className="star";
+s.style.left=Math.random()*100+"vw";
+s.style.animationDuration=(5+Math.random()*10)+"s";
+document.body.appendChild(s);
+}
+</script>
+
+<!-- pantalla 1 -->
+<div id="pantalla1" class="pantalla activa">
+
+<div class="imagen-arriba">
+<img src="./1.jpg">
+</div>
+
+<div class="envelope" id="sobre">
+<div class="flap"></div>
+<div class="sello">Te amo 💌</div>
+</div>
+
+<h2>¿Quieres ser mi San Valentín? ❤️</h2>
+
+<button id="siBtn" onclick="aceptar()">Sí</button>
+<button id="noBtn" onclick="agrandar()">No</button>
+
+</div>
+
+<!-- pantalla 2 -->
+<div id="pantalla2" class="pantalla">
+
+<h1>💌 Para ti 💌</h1>
+
+<div class="contador" id="contador"></div>
+
+<div class="carta-container">
+<img src="./2.jpg">
+<div class="carta" id="texto"></div>
+<img src="./3.jpeg">
+</div>
+
+<div class="historia" id="historia"></div>
+
+<div class="final">💍 Siempre mía, siempre tuyo, siempre nuestro 💍</div>
+<img src="./4.jpeg" class="foto-final">
+<br><br>
+<button onclick="mostrarSecreto()">🎁 Mensaje secreto</button>
+<div class="secreto" id="secreto">
+💖 Eres el amor de mi vida 💖<br>
+💖 Eres el mejor regalo que me dio la vida 💖
+</div>
+
+</div>
+
+<script>
+let tamaño=1;
+function agrandar(){
+tamaño+=0.3;
+siBtn.style.transform="scale("+tamaño+")";
+}
+
+function aceptar(){
+click.play();
+sobre.classList.add("abierto");
+
+setTimeout(()=>{
+pantalla1.classList.remove("activa");
+pantalla2.classList.add("activa");
+escribir();
+diasJuntos();
+historiaInteractiva();
+corazonNombres();
+},1800);
+}
+
+/* carta escribiéndose */
+document.addEventListener("DOMContentLoaded", function(){
+
+const texto = document.getElementById("texto");
+const historia = document.getElementById("historia");
+
+let tamaño=1;
+window.agrandar=function(){
+tamaño+=0.3;
+siBtn.style.transform="scale("+tamaño+")";
+}
+
+window.aceptar=function(){
+click.play();
+sobre.classList.add("abierto");
+
+setTimeout(()=>{
+pantalla1.classList.remove("activa");
+pantalla2.classList.add("activa");
+escribir();
+diasJuntos();
+historiaInteractiva();
+corazonNombres();
+},1800);
+}
+
+/* máquina de escribir */
+const msg=`Mi pequitas: 
+Desde que te vi, desde que te conocí supe que Tú eres alguien especial, única y maravillosa y cada día a tu lado me sorprendo más y más 
+de lo increíble que eres, de lo hermosa que eres, de lo dulce que eres, de lo inteligente que eres, de lo divertida que eres, 
+de lo cariñosa que eres, de lo hermoso que es tu corazón, de lo increíble que es tu alma, de lo maravillosa que es tu sonrisa, 
+de lo hermosa que es tu mirada, de lo increíble que es tu risa, de lo dulce que es tu voz, de lo hermosa que es tu piel, 
+de lo increíble que es tu ser, de lo maravilloso que es amarte y ser amado por ti.  
+"Todo comenzó con una mirada y una sonrisa, 
+"Luego con un mensaje y finalmente un beso ✨", 
+"Luego llegaron nuestros momentos juntos, junto a las risas, las caricias, la delicadeza de nuestro amor 💕", 
+"Los abrazos eternos, cada momento juntos es único, maravilloso e inolvidable 🤍",
+Te Amo más de lo que puedo imaginar`;
+
+let i=0;
+function escribir(){
+if(i<msg.length){
+texto.innerHTML += msg[i]==="\n" ? "<br>" : msg[i];
+i++;
+setTimeout(escribir,40);
+}
+}
+
+/* historia */
+const historiaTexto=[
+"Todo comenzó con una mirada y una sonrisa, luego con un mensaje y finalmente un beso ✨",
+"Luego llegaron nuestros momentos juntos, junto a las risas, las caricias, la delicadeza de nuestro amor 💕",
+"Los abrazos eternos, cada momento juntos es único, maravilloso e inolvidable 🤍",
+"Y ahora… nuestro para siempre 💍"
+];
+
+let h=0;
+function historiaInteractiva(){
+if(h<historiaTexto.length){
+historia.innerHTML=historiaTexto[h];
+h++;
+setTimeout(historiaInteractiva,3500);
+}
+}
+
+/* contador */
+function diasJuntos(){
+const inicio=new Date("2025-12-15");
+const hoy=new Date();
+const diff=Math.floor((hoy-inicio)/(1000*60*60*24));
+contador.innerHTML="Llevamos "+diff+" días juntos ❤️";
+}
+
+/* secreto */
+window.mostrarSecreto=function(){
+secreto.style.opacity=1;
+}
+
+});
+
+</script>
+
+</body>
+</html>
